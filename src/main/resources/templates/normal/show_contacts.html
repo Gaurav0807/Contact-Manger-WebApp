@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="normal/base::layout(~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Show contacts</title>
+</head>
+
+<body>
+<section>
+    <div class="card mr-3 ml-3">
+        <div class="card-body">
+            <h1 class="text-center"> Your Contacts</h1>
+            <!--Search bar-->
+            <!--Adding Search bar-->
+            <div class="search-container my-4">
+              <input onkeyup="search()" id="search-input" type="text" class="form-control" placeholder="Search your contacts..." />
+              <div class="search-result">
+                <!--Result goes here-->
+                <h1 class="">this is result</h1>
+              </div>
+            </div>
+            <!--End of Search bar-->
+
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${contacts}"> <!--Getting list of contacts from, m.addAttribute("contacts", contacts);-->
+                      <th scope="row" th:text="${'SCMUSER'+ c.cId}">1</th>
+                      <td>
+                          <img src="" alt="profile photo" class="my_profile_picture" th:src="@{'/img/'+${c.image}}"/>
+                          <span th:text="${c.name}"></span>
+                      </td>
+                      <td>
+                          <a href="" th:href="@{'/user/'+${c.cId}+'/contact'}">
+                              <span th:text="${c.email}"></span>
+                          </a>
+                      </td>
+                      <td th:text="${c.phone}">@mdo</td>
+
+                      <td>
+                        <a href="#" th:onclick="|deleteContact(${c.cId})|" class="btn btn-danger btn-sm">Delete</a>
+                              
+                        <form method="post" th:action="@{'/user/update-contact/'+${c.cId}}" class="mt-2">
+                            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                         </form>
+                      </td>
+
+                    </tr>
+                </tbody>
+              </table>
+
+              <!--  pagination part -->
+              <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li th:if="${currentPage != 0}" class="page-item"><a th:href="@{'/user/show-contacts/'+${currentPage-1}}" class="page-link" href="#">Previous</a></li>
+		   
+                    <li th:classappend="${currentPage==i-1?'active':''}" th:each="i : ${#numbers.sequence(1,totalPages)}" class="page-item"><a th:href="@{'/user/show-contacts/'+${i-1}}" class="page-link" href="#"><span th:text="${i}"></span></a></li>
+                    
+                    <li th:if="${currentPage+1 != totalPages}" class="page-item"><a th:href="@{'/user/show-contacts/'+${currentPage+1}}" class="page-link" href="#">Next</a></li>
+                </ul>
+              </nav>
+              
+        </div>
+    </div>
+
+  
+</section>
+
+<!-- Search functionality to contacts
+	- make 2 css class as  position: relative and  position: absolute, so data enter entered in search bar then only result will be displayed..
+	- we have method in ContactRepository that will give us Result.
+	- Creating search method by Name and also if it Name container e.g Sagar or sag.. or a 
+	  public List<Contact> findByNameContainingAndUser(String name, User user);
+
+	- To get current user we require UserRepository (Autowired).
+	- To get contacts we have ContactRepository (Autowired).
+	- We have to use this method in SearchController, as RestController. This search controller will return JsOn.
+	- RestController means it have return response body, Controller returns only view.
+	- in query, user will send text will come here in this query. 
+	
+	//search bar handler
+    	@GetMapping("/search/{query}")
+    	public ResponseEntity<?> search(@PathVariable("query") String query, Principal principal){
+        	System.out.println(query);
+    	}
+	- now using this method we have to return in form of json, now all will get serialize.
+
+	- Now we have to Serialize the Contact.java, so cId, name, secondName..all will get serialized i.e it will convert to JSON.
+	- Note we will not serialize the User, using @JsonIgnore
+	- Now all our backend task is finished, then again we will write JavaScript code (script.js) in frontend so that whenever user type query this request will go to backend.
+
+	- create a function search() in script.js and call it in show_contacts.html
+	- 
+ -->
+ 
+</body>
+</html>
